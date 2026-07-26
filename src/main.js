@@ -555,12 +555,13 @@ function loadLevel(layoutName) {
 }
 
 function ensureMenuStars(btn) {
-    var row = btn.menu_stars;
+    var row = btn.menu_stars || (btn.__alias && btn.__alias('menu_stars'));
     if (row)
         return row;
 
     row = btn.__addChildBox({
         name: 'menu_stars',
+        __needScissor: false,
         __size: [90, 26],
         __y: -48
     });
@@ -568,7 +569,8 @@ function ensureMenuStars(btn) {
     for (var i = 0; i < 3; i++) {
         row.__addChildBox({
             name: 's' + i,
-            __img: 'star2.png',
+            __img: 'star2',
+            __alpha: 1,
             __size: [24, 24],
             __ofs: [(i - 1) * 28, 0]
         });
@@ -577,26 +579,47 @@ function ensureMenuStars(btn) {
     return row;
 }
 
+function getMenuStar(row, i) {
+    var name = 's' + i
+        , star = row[name] || (row.__alias && row.__alias(name));
+    if (star)
+        return star;
+    if (row.__childs) {
+        for (var c = 0; c < row.__childs.length; c++) {
+            if (row.__childs[c] && row.__childs[c].name === name)
+                return row.__childs[c];
+        }
+        if (row.__childs[i])
+            return row.__childs[i];
+    }
+}
+
 function updateMenuLevelVisuals(wnd) {
     for (var i = 0; i < levelOrder.length; i++) {
         var levelName = levelOrder[i]
             , btnName = 'btn_level_' + (i + 1)
-            , btn = wnd.__alias(btnName)
+            , btn = wnd.__alias(btnName) || wnd[btnName]
             , unlocked = isLevelUnlocked(levelName)
             , starsCount = getLevelStars(levelName)
             , row
-            , s;
+            , s
+            , star;
 
         if (!btn)
             continue;
 
+        btn.__needScissor = false;
         btn.__alpha = unlocked ? 1 : 0.35;
         btn.__disabled = unlocked ? 0 : 1;
 
         row = ensureMenuStars(btn);
+        row.__needScissor = false;
         for (s = 0; s < 3; s++) {
-            if (row['s' + s])
-                row['s' + s].__visible = s < starsCount ? 1 : 0;
+            star = getMenuStar(row, s);
+            if (!star)
+                continue;
+            star.__alpha = 1;
+            star.__visible = s < starsCount ? 1 : 0;
         }
     }
 }

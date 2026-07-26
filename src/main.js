@@ -241,6 +241,24 @@ function ensureLoseSound() {
     };
 }
 
+function getShotBall(i) {
+    if (!shotsHud)
+        return;
+    var name = 'ball_' + i
+        , ball = shotsHud[name] || (shotsHud.__alias && shotsHud.__alias(name));
+    if (ball)
+        return ball;
+    if (shotsHud.__childs) {
+        for (var c = 0; c < shotsHud.__childs.length; c++) {
+            if (shotsHud.__childs[c] && shotsHud.__childs[c].name === name)
+                return shotsHud.__childs[c];
+        }
+        // запасной порядок: дети по индексу
+        if (shotsHud.__childs[i])
+            return shotsHud.__childs[i];
+    }
+}
+
 function createShotsHud() {
     if (!level)
         return;
@@ -251,15 +269,25 @@ function createShotsHud() {
         shotsHud = level.__addChildBox({
             name: 'shots_hud',
             __size: [200, 56],
-            __ofs: [-500, -300, 50]
+            __ofs: [-500, -300, 100],
+            __alpha: 1
         });
         for (var i = 0; i < MAX_SHOTS; i++) {
             shotsHud.__addChildBox({
                 name: 'ball_' + i,
                 __img: 'circle1',
                 __size: [48, 48],
-                __ofs: [i * 56, 0]
+                __ofs: [i * 56, 0],
+                __alpha: 1
             });
+        }
+    } else {
+        shotsHud.__alpha = 1;
+        shotsHud.__z = 100;
+        for (var i = 0; i < MAX_SHOTS; i++) {
+            var ball = getShotBall(i);
+            if (ball)
+                ball.__alpha = 1;
         }
     }
 
@@ -270,11 +298,14 @@ function updateShotsHud() {
     if (!shotsHud)
         return;
 
-    var remaining = MAX_SHOTS - shotsCount;
+    // Скрываем израсходованные слева направо: 1 выстрел → нет ball_0, и т.д.
     for (var i = 0; i < MAX_SHOTS; i++) {
-        var ball = shotsHud['ball_' + i];
-        if (ball)
-            ball.__visible = i < remaining ? 1 : 0;
+        var ball = getShotBall(i)
+            , on = i >= shotsCount;
+        if (!ball)
+            continue;
+        ball.__visible = on ? 1 : 0;
+        ball.__alpha = on ? 1 : 0;
     }
 }
 

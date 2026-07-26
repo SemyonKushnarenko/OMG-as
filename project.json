@@ -1,0 +1,211 @@
+{
+    "buildFlags": {
+        "VERSION": "1.0.0"
+    },
+    "src": {
+        "../../eeditor/engine/": [
+            "3rdparty/es6-shim.js",
+            "3rdparty/bowser.js",
+            "3rdparty/howler.core.js",
+            "globals.js",
+            "bus.js",
+            "wfont.js",
+            "basicTypes.js",
+            "renderer.js",
+            "object3d.js",
+            "camera.js",
+            "events.js",
+            "sound.js",
+            "node.js",
+            "engine.js",
+            "tweens.js",
+            "html.js",
+            "particles.js",
+            "loadtasks.js",
+            "localization.js",
+            "text.js",
+            "shadow.js",
+            "windows.js"
+        ],
+        "src/": [
+            "loading.js",
+            "main.js"
+        ],
+        "../../eeditor/plugins/": [
+            "physics.js",
+            "matter.js"
+        ]
+    },
+    "options": {
+        "__disableCache": 0,
+        "__disableCacheByVer": 0,
+        "__storeChildsAsObject": 1,
+        "__supportedLangs": [
+            "en",
+            "ru"
+        ],
+        "__defaultTextProperties": {
+            "__fontface": "Roboto_Thin"
+        },
+        "__upscaleResolution": {
+            "x": 1234,
+            "y": 768
+        },
+        "__localesDir": "lang/",
+        "__baseShadersFolder": "shaders/",
+        "__baseLayoutsFolder": "layouts/",
+        "__baseParticlesFolder": "vfx/",
+        "__baseFontsFolder": "fonts/",
+        "__baseConfigsFolder": "conf/",
+        "__disablePacking": 1
+    },
+    "res": [
+        [
+            "locale"
+        ],
+        [
+            "sound",
+            "build_res/sounds.json"
+        ],
+        [
+            "atlas",
+            "build_res/atlas-0.png?",
+            "build_res/atlas-0.json?"
+        ],
+        [
+            "image",
+            "img/simplesky.jpg"
+        ],
+        [
+            "image",
+            "img/darksky.jpg"
+        ],
+        [
+            "image",
+            "img/seasky.jpg"
+        ],
+        [
+            "effect",
+            "tail.effect.json"
+        ],
+        [
+            "font",
+            [
+                "Roboto-Thin"
+            ]
+        ],
+        [
+            "layout",
+            "level_1.json",
+            "level_2.json",
+            "level_3.json",
+            "win.json",
+            "menu.json"
+        ],
+        [
+            "shaders",
+            "base.f",
+            "c.f",
+            "base.v",
+            "part.f",
+            "part.v",
+            "partnc.f",
+            "partnc.v"
+        ]
+    ],
+    "build_targets": {
+        "SOUNDS": [
+            {
+                "type": "sounds",
+                "description": "create sounds.json file with all sounds for howler library",
+                "src": "sounds/*",
+                "dst": "build_res/"
+            }
+        ],
+        "ATLAS": [
+            {
+                "type": "atlas",
+                "description": "create atlas file with all textures for the game",
+                "name": "atlas",
+                "width": 4096,
+                "height": 4096,
+                "src": "./img/*.png",
+                "dst": "build_res/",
+                "format": "short",
+                "arrayFormat": 1
+            }
+        ],
+        "PRODUCTION": [
+            {
+                "type": "clean",
+                "description": "clean builds directory",
+                "src": "builds/$VERSION/*"
+            },
+            {
+                "type": "file",
+                "description": "create opts.json file with all project options",
+                "name": "opts.json",
+                "dst": "build_res/",
+                "content": {
+                    "options": "@/options",
+                    "res": "@/res",
+                    "version": "$VERSION"
+                }
+            },
+            {
+                "type": "datacache",
+                "description": "create data.js file with all resources",
+                "src": [
+                    "lang/*.json",
+                    "shaders/*",
+                    "layouts/*.json",
+                    "fonts/*.*",
+                    "vfx/*",
+                    "img/*.jpg",
+                    "build_res/*.json",
+                    "build_res/*.png",
+                    "build_res/*.mp3"
+                ],
+                "dst": "build_res/data.js"
+            },
+            {
+                "type": "minify",
+                "description": "minify all project code into min.js file",
+                "src": [
+                    "@/src",
+                    "build_res/data.js"
+                ],
+                "dst": "build_res/min.js",
+                "rmdebug": "debug/undebug,3d/no3d,cheats/endcheats,multiclass/unmulticlass",
+                "configuration": "release"
+            },
+            {
+                "type": "clean",
+                "description": "clean all minified files",
+                "src": [
+                    "min_*.js"
+                ]
+            },
+            {
+                "type": "packIntoOneFile",
+                "description": "pack all project files into one index.html file",
+                "dst": "builds/$VERSION/index.html",
+                "sourceFile": "build_res/index.html",
+                "src": {
+                    "/*min.js*/": "build_res/min.js"
+                }
+            }
+        ],
+        "ALL": [
+            {
+                "type": "target",
+                "description": "build all project targets",
+                "src": [
+                    "ATLAS",
+                    "SOUNDS",
+                    "PRODUCTION"
+                ]
+            }
+        ]
+    }
+}

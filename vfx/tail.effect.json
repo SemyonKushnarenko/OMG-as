@@ -1,0 +1,68 @@
+{
+  "__emitters": [
+    {
+      "__angleMod": 2,
+      "__geometryMod": 1,
+      "duration": 0.3,
+      "texture": "circle1",
+      "lifespan": [
+        0.3,
+        0
+      ],
+      "power": [
+        50
+      ],
+      "__componentsList": [
+        {
+          "__componentType": "d",
+          "direction": [
+            0
+          ],
+          "velocity": [
+            0
+          ],
+          "size": [
+            2
+          ]
+        },
+        {
+          "__componentType": "c",
+          "color": [
+            255
+          ],
+          "color_factor": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": [
+              [
+                [
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  0
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "__componentType": "tl",
+          "__factor": [
+            4
+          ],
+          "__linked": 1,
+          "__reverseParticlesUpdate": 1
+        },
+        {
+          "__componentType": "uv",
+          "__uvsTransform": 0,
+          "__uvsType": 1,
+          "__animated": 0
+        }
+      ]
+    }
+  ]
+}

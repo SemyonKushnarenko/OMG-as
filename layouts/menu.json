@@ -1,0 +1,46 @@
+[
+  {
+    "__color": "#250162",
+    "ha": 1,
+    "va": 1,
+    "__size": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "__childs": {
+      "btn_level_1": {
+        "__img": "level1",
+        "__size": [
+          80,
+          50
+        ],
+        "__text": {},
+        "__x": -150
+      },
+      "btn_level_2": {
+        "__img": "level2",
+        "ha": 1,
+        "va": 1,
+        "sha": 1,
+        "sva": 1,
+        "__needScissor": false,
+        "__size": [
+          80,
+          50
+        ],
+        "__text": {}
+      },
+      "btn_level_3": {
+        "__img": "level3",
+        "__size": [
+          80,
+          50
+        ],
+        "__text": {},
+        "__x": 150
+      }
+    }
+  }
+]

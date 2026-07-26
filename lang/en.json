@@ -1,0 +1,13 @@
+[
+    "play", "PLAY",
+    "try_again", "TRY AGAIN",
+    "restart", "RESTART",
+    "next_level", "NEXT LEVEL",
+    "btn_menu", "MAIN MENU",
+    "score", "SCORE",
+    "you_win", "YOU WIN!",
+    "you_lose", "YOU LOST",
+    "level_1", "1",
+    "level_2", "2",
+    "level_3", "3"
+]

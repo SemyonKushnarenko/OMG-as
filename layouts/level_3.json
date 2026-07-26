@@ -1,0 +1,300 @@
+[
+  {
+    "name": "level_0",
+    "__size": [
+      1234,
+      768
+    ],
+    "__childs": {
+      "sky": {
+        "__anchor": {
+          "x": -1
+        },
+        "__alpha": 0.8,
+        "__img": "seasky.jpg",
+        "__needScissor": false,
+        "__size": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "userInputArea": {
+        "__fitImg": {
+          "x": 0,
+          "y": 1.3
+        },
+        "__color": "#5f12e9",
+        "__img": "slingshot",
+        "sha": 0,
+        "sva": 2,
+        "__corner": {
+          "0": 0,
+          "1": 0,
+          "3": 0.7
+        },
+        "__size": [
+          140,
+          100
+        ],
+        "__ofs": [
+          105,
+          -96,
+          -15
+        ],
+        "__childs": {
+          "_0": {
+            "__color": "#fb22a0",
+            "__alpha": 0,
+            "__rotate": 3.9,
+            "__size": [
+              25,
+              25
+            ],
+            "__ofs": [
+              7,
+              -3
+            ],
+            "__childs": {
+              "rubber": {
+                "__color": "#d2b185",
+                "__alpha": 0.7,
+                "sha": 2,
+                "sva": 1,
+                "__size": [
+                  148,
+                  5
+                ]
+              }
+            }
+          }
+        }
+      },
+      "shots_hud": {
+        "__size": [
+          200,
+          56
+        ],
+        "__ofs": [
+          -500,
+          -300,
+          50
+        ],
+        "__childs": {
+          "ball_0": {
+            "__img": "circle1",
+            "__size": [
+              48,
+              48
+            ]
+          },
+          "ball_1": {
+            "__img": "circle1",
+            "__size": [
+              48,
+              48
+            ],
+            "__x": 56
+          },
+          "ball_2": {
+            "__img": "circle1",
+            "__size": [
+              48,
+              48
+            ],
+            "__x": 112
+          }
+        }
+      },
+      "ph_world": {
+        "__needScissor": true,
+        "__size": [
+          1234,
+          768
+        ],
+        "__childs": {
+          "_0": {
+            "__physics": {
+              "__isStatic": false,
+              "__friction": 10,
+              "__frictionAir": 1,
+              "__frictionStatic": 50,
+              "__restitution": 0,
+              "__density": 1,
+              "__bodyType": 0
+            },
+            "__img": "block_3",
+            "__ofs": [
+              427,
+              205
+            ]
+          },
+          "_1": {
+            "__physics": {
+              "__isStatic": false,
+              "__friction": 10,
+              "__frictionAir": 1,
+              "__frictionStatic": 50,
+              "__restitution": 0,
+              "__density": 1,
+              "__bodyType": 1
+            },
+            "__img": "block_4",
+            "__size": [
+              126,
+              126
+            ],
+            "__ofs": [
+              291,
+              220
+            ]
+          },
+          "wall": {
+            "__physics": {
+              "__isStatic": true,
+              "__friction": 10,
+              "__frictionAir": 1,
+              "__frictionStatic": 50,
+              "__restitution": 0,
+              "__density": 1,
+              "__bodyType": 0
+            },
+            "__size": [
+              65,
+              689
+            ],
+            "__ofs": [
+              585,
+              -44
+            ],
+            "__childs": {
+              "_0": {
+                "__rotate": 90,
+                "__img": "cloud",
+                "__size": [
+                  269,
+                  100
+                ],
+                "__ofs": [
+                  -4,
+                  -228
+                ]
+              },
+              "_1": {
+                "__rotate": 90,
+                "__img": "cloud",
+                "__size": [
+                  269,
+                  100
+                ],
+                "__ofs": [
+                  -4,
+                  20
+                ]
+              },
+              "_2": {
+                "__rotate": 90,
+                "__img": "cloud",
+                "__size": [
+                  269,
+                  100
+                ],
+                "__ofs": [
+                  -4,
+                  260
+                ]
+              }
+            }
+          },
+          "ground": {
+            "__physics": {
+              "__isStatic": true,
+              "__friction": 10,
+              "__frictionAir": 1,
+              "__frictionStatic": 50,
+              "__restitution": 0,
+              "__density": 1,
+              "__bodyType": 0
+            },
+            "__size": [
+              1234,
+              211
+            ],
+            "__y": 395,
+            "__childs": {
+              "_0": {
+                "__img": "cloud",
+                "__size": [
+                  484,
+                  213
+                ],
+                "__ofs": [
+                  29,
+                  -43,
+                  -1
+                ]
+              },
+              "_1": {
+                "__img": "cloud",
+                "__size": [
+                  484,
+                  213
+                ],
+                "__ofs": [
+                  443,
+                  -37
+                ]
+              },
+              "_2": {
+                "__img": "cloud",
+                "__size": [
+                  484,
+                  213
+                ],
+                "__ofs": [
+                  -379,
+                  -43,
+                  -2
+                ]
+              }
+            }
+          },
+          "wall_2": {
+            "__physics": {
+              "__isStatic": true,
+              "__friction": 10,
+              "__frictionAir": 1,
+              "__frictionStatic": 50,
+              "__restitution": 0,
+              "__density": 1,
+              "__bodyType": 0
+            },
+            "__size": [
+              65,
+              253
+            ],
+            "__ofs": [
+              26,
+              190
+            ],
+            "__childs": {
+              "_0": {
+                "__rotate": 90,
+                "__img": "fullcloud",
+                "__size": [
+                  364,
+                  135
+                ],
+                "__ofs": [
+                  -4,
+                  20
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+]

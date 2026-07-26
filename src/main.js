@@ -230,15 +230,28 @@ function canShoot() {
 }
 
 function ensureLoseSound() {
-    if (sounds.lose || !__window.Howl)
+    // Строковый ключ: после minify sounds.lose не совпадает со спрайтом sounds['lose']
+    if (sounds['lose'] || !__window.Howl)
         return;
-    // lose.mp3 лежит отдельно (в спрайт sounds.mp3 попадает после make SOUNDS)
-    sounds.lose = {
-        howl: new Howl({
-            src: ['sounds/lose.mp3'],
-            onend: __onSoundEnd
-        })
-    };
+    try {
+        sounds['lose'] = {
+            howl: new Howl({
+                src: ['sounds/lose.mp3'],
+                onend: __onSoundEnd
+            })
+        };
+    } catch (err) { }
+}
+
+function countRemainingBigBlocks() {
+    var n = 0;
+    if (!level)
+        return mmax(0, big_blocks);
+    level.__traverse(node => {
+        if (node && node.__needBreaks && !node.__destructed)
+            n++;
+    });
+    return n;
 }
 
 function getShotBall(i) {
@@ -321,10 +334,12 @@ function applyWinStars(starsNode, starCount) {
     if (!starsNode)
         return;
 
-    // Порядок появления в анимации: центр → правая → левая
-    var order = [starsNode._0, starsNode._1, starsNode._2];
-    for (var i = 0; i < order.length; i++) {
-        var star = order[i];
+    // Только __childs по индексу: имена _0/_1/_2 в билде пакуются, строки/alias ломаются
+    var childs = starsNode.__childs || []
+        , i
+        , star;
+    for (i = 0; i < childs.length; i++) {
+        star = childs[i];
         if (!star)
             continue;
         if (i >= starCount) {
@@ -347,7 +362,7 @@ function scheduleLoseCheck() {
         loseCheckTimeout = 0;
         if (epoch !== levelEpoch || levelEnded)
             return;
-        if (big_blocks > 0)
+        if (countRemainingBigBlocks() > 0)
             show_result(0);
     }, LOSE_CHECK_DELAY);
 }
@@ -357,17 +372,25 @@ function show_result(isVictory) {
         return;
     levelEnded = 1;
 
+    // не даём сработать отложенному win/lose поверх уже показанного результата
+    if (loseCheckTimeout) {
+        _clearTimeout(loseCheckTimeout);
+        loseCheckTimeout = 0;
+    }
+    if (winResultTimeout) {
+        _clearTimeout(winResultTimeout);
+        winResultTimeout = 0;
+    }
+
     if (isVictory) {
-        playSound('win');
         calcScoreAndStars();
         saveLevelResult(currentLevelName, lastStars);
     } else {
-        ensureLoseSound();
-        playSound('lose');
         lastScore = 0;
         lastStars = 0;
     }
 
+    var winStarsNode = 0;
     showWindow('win', wnd => {
         wnd.__setAliasesData({
             title: {
@@ -377,8 +400,10 @@ function show_result(isVictory) {
                 __text: TR('score') + ': ' + lastScore,
                 __visible: isVictory ? 1 : 0
             },
-            stars: {
-                __visible: isVictory ? 1 : 0
+            // Функция-alias: ключ пакуется вместе с layout, узел сохраняем в замыкание
+            stars(node) {
+                winStarsNode = node;
+                node.__visible = isVictory ? 1 : 0;
             },
             next_level: {
                 __text: isVictory ? 'next_level' : 'restart',
@@ -406,9 +431,19 @@ function show_result(isVictory) {
                 __onTapHighlight: 1
             }
         });
-    }, wnd => {
-        applyWinStars(wnd.__alias('stars'), isVictory ? lastStars : 0);
+    }, () => {
+        applyWinStars(winStarsNode, isVictory ? lastStars : 0);
     });
+
+    // звук после UI — ошибка Howl не должна блокировать окно
+    try {
+        if (isVictory) {
+            playSound('win');
+        } else {
+            ensureLoseSound();
+            playSound('lose');
+        }
+    } catch (err) { }
 }
 
 function getLevelAliasesData() {
@@ -555,7 +590,7 @@ function loadLevel(layoutName) {
 }
 
 function ensureMenuStars(btn) {
-    var row = btn.menu_stars || (btn.__alias && btn.__alias('menu_stars'));
+    var row = btn['menu_stars'];
     if (row)
         return row;
 
@@ -571,6 +606,7 @@ function ensureMenuStars(btn) {
             name: 's' + i,
             __img: 'star2',
             __alpha: 1,
+            __visible: 0,
             __size: [24, 24],
             __ofs: [(i - 1) * 28, 0]
         });
@@ -579,31 +615,17 @@ function ensureMenuStars(btn) {
     return row;
 }
 
-function getMenuStar(row, i) {
-    var name = 's' + i
-        , star = row[name] || (row.__alias && row.__alias(name));
-    if (star)
-        return star;
-    if (row.__childs) {
-        for (var c = 0; c < row.__childs.length; c++) {
-            if (row.__childs[c] && row.__childs[c].name === name)
-                return row.__childs[c];
-        }
-        if (row.__childs[i])
-            return row.__childs[i];
-    }
-}
-
-function updateMenuLevelVisuals(wnd) {
+function updateMenuLevelVisuals(menuBtns) {
+    // menuBtns — массив узлов кнопок из aliases (имена в билде пакуются, __alias('btn_level_N') ломается)
     for (var i = 0; i < levelOrder.length; i++) {
         var levelName = levelOrder[i]
-            , btnName = 'btn_level_' + (i + 1)
-            , btn = wnd.__alias(btnName) || wnd[btnName]
+            , btn = menuBtns[i]
             , unlocked = isLevelUnlocked(levelName)
             , starsCount = getLevelStars(levelName)
             , row
             , s
-            , star;
+            , star
+            , stars;
 
         if (!btn)
             continue;
@@ -614,14 +636,22 @@ function updateMenuLevelVisuals(wnd) {
 
         row = ensureMenuStars(btn);
         row.__needScissor = false;
+        stars = row.__childs || [];
         for (s = 0; s < 3; s++) {
-            star = getMenuStar(row, s);
+            star = stars[s] || row['s' + s];
             if (!star)
                 continue;
             star.__alpha = 1;
             star.__visible = s < starsCount ? 1 : 0;
         }
     }
+}
+
+function bindMenuLevelButton(node, levelName, menuBtns, index) {
+    menuBtns[index] = node;
+    var handler = makeLevelButtonHandler(levelName);
+    node.__onTap = handler.__onTap;
+    node.__onTapHighlight = 1;
 }
 
 function makeLevelButtonHandler(levelName) {
@@ -637,14 +667,16 @@ function makeLevelButtonHandler(levelName) {
 }
 
 function show_menu() {
+    var menuBtns = [];
     showWindow('menu', wnd => {
+        // Ключи btn_level_* пакуются вместе с layout; узлы сохраняем в menuBtns по индексу
         wnd.__setAliasesData({
-            btn_level_1: makeLevelButtonHandler('level_1'),
-            btn_level_2: makeLevelButtonHandler('level_2'),
-            btn_level_3: makeLevelButtonHandler('level_3')
+            btn_level_1(node) { bindMenuLevelButton(node, 'level_1', menuBtns, 0); },
+            btn_level_2(node) { bindMenuLevelButton(node, 'level_2', menuBtns, 1); },
+            btn_level_3(node) { bindMenuLevelButton(node, 'level_3', menuBtns, 2); }
         });
-    }, wnd => {
-        updateMenuLevelVisuals(wnd);
+    }, () => {
+        updateMenuLevelVisuals(menuBtns);
     });
 }
 
